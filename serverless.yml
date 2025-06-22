@@ -1,4 +1,5 @@
 service: utec-diagram-api
+org: brandolc18
 
 frameworkVersion: "3"
 
@@ -7,7 +8,8 @@ provider:
   runtime: python3.13
   stage: ${opt:stage, 'dev'}
   region: us-east-1
-  org: brandolc18
+  timeout: 30 # Timeout global para todas las funciones (30 segundos)
+  memorySize: 512 # Memoria global para todas las funciones (512 MB)
   role: arn:aws:iam::248056481657:role/LabRole
   environment:
     S3_BUCKET_NAME: ${self:service}-diagrams-${self:provider.stage}
@@ -31,6 +33,8 @@ functions:
   # Función para generar diagramas de AWS
   generateAwsDiagram:
     handler: src/functions/aws_diagrams.generate
+    timeout: 30
+    memorySize: 1024
     events:
       - http:
           path: /diagrams/aws
@@ -40,6 +44,8 @@ functions:
   # Función para generar diagramas ER
   generateErDiagram:
     handler: src/functions/er_diagrams.generate
+    timeout: 30
+    memorySize: 1024
     events:
       - http:
           path: /diagrams/er
@@ -49,6 +55,8 @@ functions:
   # Función para generar diagramas JSON
   generateJsonDiagram:
     handler: src/functions/json_diagrams.generate
+    timeout: 30
+    memorySize: 1024
     events:
       - http:
           path: /diagrams/json
@@ -58,6 +66,8 @@ functions:
   # Función para listar diagramas de un usuario
   listDiagrams:
     handler: src/functions/list_diagrams.handler
+    timeout: 30
+    memorySize: 512
     events:
       - http:
           path: /diagrams
@@ -109,7 +119,20 @@ resources:
 plugins:
   - serverless-offline
   - serverless-python-requirements
+  - serverless-deployment-bucket
+  - serverless-dotenv-plugin
 
 custom:
   pythonRequirements:
     dockerizePip: true
+  stage: ${opt:stage, 'dev'}
+  logRetentionInDays: 14  # Retención de logs en CloudWatch
+  deploymentBucket:  # Bucket para los artefactos de despliegue
+    name: utec-diagram-deployments-${self:provider.stage}
+    serverSideEncryption: AES256  # Cifrado del bucket
+  # Configuración para pruebas locales
+  localstack:
+    stages:
+      - local
+    host: http://localhost
+    autostart: true

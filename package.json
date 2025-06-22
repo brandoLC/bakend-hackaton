@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "serverless deploy",
-    "local": "serverless offline"
+    "deploy:prod": "serverless deploy --stage prod",
+    "local": "serverless offline",
+    "logs": "serverless logs -f",
+    "remove": "serverless remove"
   },
   "keywords": [
     "diagrams",
@@ -15,7 +18,7 @@
     "json",
     "serverless"
   ],
-  "author": "",
+  "author": "UTEC Hackathon Team",
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1430.0",
@@ -29,6 +32,8 @@
   },
   "devDependencies": {
     "serverless": "^3.34.0",
+    "serverless-deployment-bucket": "^1.6.0",
+    "serverless-dotenv-plugin": "^6.0.0",
     "serverless-offline": "^12.0.4",
     "serverless-python-requirements": "^6.0.0"
   }

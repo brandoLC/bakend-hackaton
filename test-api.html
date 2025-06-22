@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Diagramas - UTEC Hackathon</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .token-info {
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Test API Diagramas - UTEC Hackathon</h1>
+        
+        <div class="token-info">
+            <h3>👤 Información del Usuario</h3>
+            <p><strong>Usuario:</strong> rola 777</p>
+            <p><strong>Email:</strong> donrola@ejemplo.com</p>
+            <p><strong>User ID:</strong> 60f75799-f5e6-4667-8f55-49c8b1548210</p>
+            <p><strong>Token válido hasta:</strong> <span id="tokenExpiry"></span></p>
+        </div>
+
+        <!-- Test 1: Listar Diagramas -->
+        <div class="section">
+            <h2>📋 Test 1: Listar Diagramas</h2>
+            <p>Obtiene todos los diagramas del usuario actual.</p>
+            <button onclick="testListDiagrams()">Listar Diagramas</button>
+            <div id="listResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 2: Generar Diagrama AWS -->
+        <div class="section">
+            <h2>☁️ Test 2: Generar Diagrama AWS</h2>
+            <p>Genera un diagrama de arquitectura AWS.</p>
+            <input type="text" id="awsTitle" placeholder="Título del diagrama" value="Mi Arquitectura AWS">
+            <textarea id="awsComponents" placeholder="Componentes AWS (JSON)">
+[
+  {"type": "EC2", "name": "Web Server", "description": "Servidor web principal"},
+  {"type": "RDS", "name": "Database", "description": "Base de datos MySQL"},
+  {"type": "S3", "name": "Static Files", "description": "Archivos estáticos"},
+  {"type": "CloudFront", "name": "CDN", "description": "Distribución de contenido"}
+]</textarea>
+            <button onclick="testAwsDiagram()">Generar Diagrama AWS</button>
+            <div id="awsResult" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 3: Generar Diagrama JSON -->
+        <div class="section">
+            <h2>📊 Test 3: Generar Diagrama JSON</h2>
+            <p>Genera un diagrama a partir de datos JSON.</p>
+            <input type="text" id="jsonTitle" placeholder="Título del diagrama" value="Estructura de Datos">
+            <textarea id="jsonData" placeholder="Datos JSON">
+{
+  "nodes": [
+    {"id": "1", "label": "Usuario", "type": "entity"},
+    {"id": "2", "label": "Pedido", "type": "entity"},
+    {"id": "3", "label": "Producto", "type": "entity"}
+  ],
+  "edges": [
+    {"from": "1", "to": "2", "label": "hace"},
+    {"from": "2", "to": "3", "label": "contiene"}
+  ]
+}</textarea>
+            <button onclick="testJsonDiagram()">Generar Diagrama JSON</button>
+            <div id="jsonResult" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración
+        const API_BASE_URL = 'https://9kf1vihn7h.execute-api.us-east-1.amazonaws.com/dev';
+        const JWT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjBmNzU3OTktZjVlNi00NjY3LThmNTUtNDljOGIxNTQ4MjEwIiwiZW1haWwiOiJkb25yb2xhQGVqZW1wbG8uY29tIiwibmFtZSI6InJvbGEgNzc3IiwiaWF0IjoxNzUwNjI1MTg0LCJleHAiOjE3NTA3MTE1ODR9.rEXb6Iy_qJO8Uiq43oed6x5H6V3lx8XzZClvmoODl-k';
+        
+        // Mostrar fecha de expiración del token
+        const tokenPayload = JSON.parse(atob(JWT_TOKEN.split('.')[1]));
+        const expiryDate = new Date(tokenPayload.exp * 1000);
+        document.getElementById('tokenExpiry').textContent = expiryDate.toLocaleString();
+
+        // Función para hacer peticiones API
+        async function makeRequest(endpoint, method = 'GET', data = null) {
+            const options = {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${JWT_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                const result = await response.json();
+                
+                return {
+                    success: response.ok,
+                    status: response.status,
+                    data: result
+                };
+            } catch (error) {
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+        }
+
+        // Función para mostrar resultados
+        function showResult(elementId, result, loading = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            
+            if (loading) {
+                element.className = 'result loading';
+                element.textContent = '⏳ Procesando...';
+                return;
+            }
+            
+            if (result.success) {
+                element.className = 'result success';
+                element.textContent = `✅ Éxito (${result.status})\n\n${JSON.stringify(result.data, null, 2)}`;
+            } else {
+                element.className = 'result error';
+                element.textContent = `❌ Error ${result.status || 'N/A'}\n\n${result.error || JSON.stringify(result.data, null, 2)}`;
+            }
+        }
+
+        // Test 1: Listar Diagramas
+        async function testListDiagrams() {
+            showResult('listResult', null, true);
+            const result = await makeRequest('/diagrams');
+            showResult('listResult', result);
+        }
+
+        // Test 2: Generar Diagrama AWS
+        async function testAwsDiagram() {
+            showResult('awsResult', null, true);
+            
+            const title = document.getElementById('awsTitle').value;
+            const componentsText = document.getElementById('awsComponents').value;
+            
+            try {
+                const components = JSON.parse(componentsText);
+                const data = {
+                    title: title,
+                    components: components
+                };
+                
+                const result = await makeRequest('/diagrams/aws', 'POST', data);
+                showResult('awsResult', result);
+            } catch (error) {
+                showResult('awsResult', {
+                    success: false,
+                    error: `Error parsing JSON: ${error.message}`
+                });
+            }
+        }
+
+        // Test 3: Generar Diagrama JSON
+        async function testJsonDiagram() {
+            showResult('jsonResult', null, true);
+            
+            const title = document.getElementById('jsonTitle').value;
+            const dataText = document.getElementById('jsonData').value;
+            
+            try {
+                const jsonData = JSON.parse(dataText);
+                const data = {
+                    title: title,
+                    data: jsonData
+                };
+                
+                const result = await makeRequest('/diagrams/json', 'POST', data);
+                showResult('jsonResult', result);
+            } catch (error) {
+                showResult('jsonResult', {
+                    success: false,
+                    error: `Error parsing JSON: ${error.message}`
+                });
+            }
+        }
+
+        // Verificar si el token está expirado
+        if (Date.now() >= tokenPayload.exp * 1000) {
+            alert('⚠️ El token JWT ha expirado. Necesitas generar uno nuevo.');
+        }
+    </script>
+</body>
+</html>

@@ -39,7 +39,15 @@ functions:
       - http:
           path: /diagrams/aws
           method: post
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+            allowCredentials: false
 
   # Función para generar diagramas ER (temporalmente deshabilitada)
   # generateErDiagram:
@@ -61,7 +69,15 @@ functions:
       - http:
           path: /diagrams/json
           method: post
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+            allowCredentials: false
 
   # Función para listar diagramas de un usuario
   listDiagrams:
@@ -72,7 +88,15 @@ functions:
       - http:
           path: /diagrams
           method: get
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+            allowCredentials: false
 
 resources:
   Resources:

@@ -117,22 +117,9 @@ resources:
               ProjectionType: ALL
 
 plugins:
-  - serverless-offline
   - serverless-python-requirements
-  - serverless-deployment-bucket
   - serverless-dotenv-plugin
 
 custom:
   pythonRequirements:
     dockerizePip: true
-  stage: ${opt:stage, 'dev'}
-  logRetentionInDays: 14 # Retención de logs en CloudWatch
-  deploymentBucket: # Bucket para los artefactos de despliegue
-    name: utec-diagram-deployments-${self:provider.stage}
-    serverSideEncryption: AES256 # Cifrado del bucket
-  # Configuración para pruebas locales
-  localstack:
-    stages:
-      - local
-    host: http://localhost
-    autostart: true

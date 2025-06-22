@@ -1,0 +1,35 @@
+{
+  "name": "api-diagramas",
+  "version": "1.0.0",
+  "description": "API serverless para generación de diagramas a partir de código",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "serverless deploy",
+    "local": "serverless offline"
+  },
+  "keywords": [
+    "diagrams",
+    "aws",
+    "er",
+    "json",
+    "serverless"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1430.0",
+    "diagrams": "^0.0.1",
+    "eralchemy": "^1.2.10",
+    "jsonschema": "^1.4.1",
+    "middy": "^0.36.0",
+    "python-shell": "^5.0.0",
+    "serverless-http": "^3.2.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "serverless": "^3.34.0",
+    "serverless-offline": "^12.0.4",
+    "serverless-python-requirements": "^6.0.0"
+  }
+}

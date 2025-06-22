@@ -1,0 +1,115 @@
+service: utec-diagram-api
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: python3.13
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  org: brandolc18
+  role: arn:aws:iam::248056481657:role/LabRole
+  environment:
+    S3_BUCKET_NAME: ${self:service}-diagrams-${self:provider.stage}
+    DIAGRAMS_TABLE: ${self:service}-metadata-${self:provider.stage}
+    JWT_SECRET: ${env:JWT_SECRET, 'your-default-secret-key'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: arn:aws:s3:::${self:provider.environment.S3_BUCKET_NAME}/*
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:Scan
+        - dynamodb:Query
+      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DIAGRAMS_TABLE}
+
+functions:
+  # Función para generar diagramas de AWS
+  generateAwsDiagram:
+    handler: src/functions/aws_diagrams.generate
+    events:
+      - http:
+          path: /diagrams/aws
+          method: post
+          cors: true
+
+  # Función para generar diagramas ER
+  generateErDiagram:
+    handler: src/functions/er_diagrams.generate
+    events:
+      - http:
+          path: /diagrams/er
+          method: post
+          cors: true
+
+  # Función para generar diagramas JSON
+  generateJsonDiagram:
+    handler: src/functions/json_diagrams.generate
+    events:
+      - http:
+          path: /diagrams/json
+          method: post
+          cors: true
+
+  # Función para listar diagramas de un usuario
+  listDiagrams:
+    handler: src/functions/list_diagrams.handler
+    events:
+      - http:
+          path: /diagrams
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    # Bucket S3 para almacenar diagramas
+    DiagramsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.S3_BUCKET_NAME}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              AllowedOrigins:
+                - "*"
+
+    # Tabla DynamoDB para metadatos de diagramas
+    DiagramsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DIAGRAMS_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+plugins:
+  - serverless-offline
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true

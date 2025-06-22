@@ -5,7 +5,7 @@ frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: python3.13
+  runtime: python3.11
   stage: ${opt:stage, 'dev'}
   region: us-east-1
   timeout: 30 # Timeout global para todas las funciones (30 segundos)
@@ -41,16 +41,16 @@ functions:
           method: post
           cors: true
 
-  # Función para generar diagramas ER
-  generateErDiagram:
-    handler: src/functions/er_diagrams.generate
-    timeout: 30
-    memorySize: 1024
-    events:
-      - http:
-          path: /diagrams/er
-          method: post
-          cors: true
+  # Función para generar diagramas ER (temporalmente deshabilitada)
+  # generateErDiagram:
+  #   handler: src/functions/er_diagrams.generate
+  #   timeout: 30
+  #   memorySize: 1024
+  #   events:
+  #     - http:
+  #         path: /diagrams/er
+  #         method: post
+  #         cors: true
 
   # Función para generar diagramas JSON
   generateJsonDiagram:

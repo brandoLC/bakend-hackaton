@@ -25,6 +25,12 @@ var/
 .env
 node_modules/
 
+# Package files
+package-lock.json
+*.fixed
+*.new
+*.bak
+
 # IDEs and editors
 /.idea
 .project

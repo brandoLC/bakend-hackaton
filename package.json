@@ -22,8 +22,6 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1430.0",
-    "diagrams": "^0.0.1",
-    "eralchemy": "^1.2.10",
     "jsonschema": "^1.4.1",
     "middy": "^0.36.0",
     "python-shell": "^5.0.0",

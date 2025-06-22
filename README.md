@@ -85,7 +85,7 @@ with Diagram("Arquitectura Serverless", show=False):
     dynamo = DynamoDB("Metadatos")
     bucket = S3("Almacenamiento de Diagramas")
     monitor = CloudWatch("Monitoreo")
-    
+
     cognito >> auth_lambda >> api
     api >> process_lambda
     process_lambda >> dynamo
